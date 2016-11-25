@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -123,6 +124,7 @@ public class PlateRecognitionActivity extends AppCompatActivity
         final String openAlprConfFile = ANDROID_DATA_DIR + File.separatorChar + "runtime_data" + File.separatorChar + "openalpr.conf";
 
         resultTextView.setText("Processing" + lineSeparator);
+        resultTextView.setMovementMethod(new ScrollingMovementMethod());
 
         final OpenALPR alpr = OpenALPR.Factory.create(PlateRecognitionActivity.this, ANDROID_DATA_DIR);
 
@@ -160,7 +162,7 @@ public class PlateRecognitionActivity extends AppCompatActivity
 
     private void addRecognitionResult( String strResult, String strFileName )
     {
-        String message = "Output for " + strFileName;
+        String message = "Output for " + strFileName + lineSeparator;
         try {
             final Results results = new Gson().fromJson( strResult, Results.class );
             if (results == null || results.getResults() == null || results.getResults().size() == 0) {
@@ -169,7 +171,7 @@ public class PlateRecognitionActivity extends AppCompatActivity
                 int iPlates =  results.getResults().size();
                 for ( int i = 0; i < iPlates; i++ ) {
                     Result result = results.getResults().get( i );
-                    message += "Plate " + i + ":" + result.getPlate()
+                    message += "Plate " + i + ":" + result.getPlate() + lineSeparator
                             // Trim confidence to two decimal places
                             + " Confidence: " + String.format("%.2f", result.getConfidence()) + "%" + lineSeparator;
                 }
