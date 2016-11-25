@@ -20,6 +20,7 @@ import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.strajerii.parkingguardian.Drone.BebopDrone;
+import com.strajerii.parkingguardian.Drone.DroneAction;
 import com.strajerii.parkingguardian.Drone.PathManager;
 import com.strajerii.parkingguardian.R;
 import com.strajerii.parkingguardian.View.BebopVideoView;
@@ -357,7 +358,7 @@ public class BebopActivity extends AppCompatActivity {
                     mConnectionProgressDialog.dismiss();
 
                     if (_pathManager.hasActions()) {
-                        PathManager.Action action = _pathManager.getNextAction();
+                        DroneAction action = _pathManager.getNextAction();
                         doAction(action);
                         try {
                             Thread.sleep(action.time);
@@ -398,7 +399,7 @@ public class BebopActivity extends AppCompatActivity {
                     mDownloadBt.setEnabled(false);
 
                     while(_pathManager.hasActions()) {
-                        PathManager.Action action = _pathManager.getNextAction();
+                        DroneAction action = _pathManager.getNextAction();
                         doAction(action);
                         try {
                             Thread.sleep(action.time);
@@ -473,10 +474,10 @@ public class BebopActivity extends AppCompatActivity {
         }
     };
 
-    private void doAction( PathManager.Action action ) {
+    private void doAction( DroneAction action ) {
         Log.d("Bebop activity", "action: " + action.toString() );
 
-        switch( action.eMove) {
+        switch( action.eMove ) {
             case eTakeOff:
             case eLand:
                 takeOffOrLand();

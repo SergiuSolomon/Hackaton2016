@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Created by marioca on 11/25/2016.
@@ -15,7 +17,7 @@ import java.io.InputStream;
 
 public class FlightPath {
 
-    public boolean getPath()
+    public boolean getPath( ArrayList<DroneAction> actionPath )
     {
         File downloadDirectory =  Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         String fileName = "FlightPath.txt";
@@ -25,7 +27,16 @@ public class FlightPath {
             BufferedReader br = new BufferedReader( new FileReader( file ) );
             String line;
             while ( ( line = br.readLine( )) != null ) {
-               Log.d( "FlightPath:", line );
+                String split[]= line.split( "\\s+" );
+                EMoves eMoveToAdd = EMoves.eTakeOff;
+                for ( EMoves  eMove : EMoves.values()  ) {
+                    if( Objects.equals( eMove.toString(), split[0] ) ) {
+                        eMoveToAdd = eMove;
+                    }
+                }
+                int nPos = Integer.getInteger( split[1] );
+                int nTime = Integer.getInteger( split[2] );
+                actionPath.add( new DroneAction( eMoveToAdd, nPos, nTime ) );
             }
             br.close();
         }
