@@ -12,13 +12,30 @@ public class PathManager {
     public enum EMoves {
         eTakeOff,
         eLand,
-        eUp,
-        eDown,
-        eLeft,
-        eRight,
+
+        eStartUp,
+        eStopUp,
+
+        eStartDown,
+        eStopDown,
+
         eStartForward,
         eStopForward,
-        eBackward
+
+        eStartBackward,
+        eStopBackward,
+
+        eStartYawLeft,
+        eStopYawLeft,
+
+        eStartYawRight,
+        eStopYawRight,
+
+        eStartRollLeft,
+        eStopRollLeft,
+
+        eStartRollRight,
+        eStopRollRight,
     }
 
     public class Action {

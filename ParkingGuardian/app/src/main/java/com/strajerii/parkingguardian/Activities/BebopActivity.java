@@ -478,58 +478,91 @@ public class BebopActivity extends AppCompatActivity {
                 takeOffOrLand();
                 break;
 
-            case eUp: {
-                // start going up
+            //up
+            case eStartUp: {
                 mBebopDrone.setGaz((byte) action.gas);
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBebopDrone.setGaz((byte) 0);
-                    }
-                }, action.time);
+            }
+            break;
+            case eStopUp: {
+                mBebopDrone.setGaz((byte) 0);
             }
             break;
 
-            case eDown: {
-                // start going down
+            //down
+            case eStartDown: {
                 mBebopDrone.setGaz((byte) -action.gas);
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBebopDrone.setGaz((byte) 0);
-                    }
-                }, action.time);
+            }
+            break;
+            case eStopDown: {
+                mBebopDrone.setGaz((byte) 0);
             }
             break;
 
+            //forward
             case eStartForward: {
-                // start going forward
                 mBebopDrone.setPitch((byte) action.gas);
                 mBebopDrone.setFlag((byte) 1);
             }
             break;
-
             case eStopForward: {
-                // start going forward
                 mBebopDrone.setPitch((byte) 0);
                 mBebopDrone.setFlag((byte) 0);
             }
             break;
 
-            case eBackward: {
-                // start going forward
+            //backward
+            case eStartBackward: {
                 mBebopDrone.setPitch((byte) -action.gas);
                 mBebopDrone.setFlag((byte) 1);
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBebopDrone.setPitch((byte) 0);
-                        mBebopDrone.setFlag((byte) 0);
-                    }
-                }, action.time);
+            }
+            break;
+            case eStopBackward: {
+                mBebopDrone.setPitch((byte) 0);
+                mBebopDrone.setFlag((byte) 0);
+            }
+            break;
+
+            // yaw left
+            case eStartYawLeft: {
+                mBebopDrone.setYaw((byte) -action.gas);
+            }
+            break;
+            case eStopYawLeft: {
+                mBebopDrone.setYaw((byte) 0);
+            }
+            break;
+
+            //yaw right
+            case eStartYawRight: {
+                mBebopDrone.setYaw((byte) action.gas);
+            }
+            break;
+            case eStopYawRight: {
+                mBebopDrone.setYaw((byte) 0);
+            }
+            break;
+
+            // roll left
+            case eStartRollLeft: {
+                mBebopDrone.setRoll((byte) -action.gas);
+                mBebopDrone.setFlag((byte) 1);
+            }
+            break;
+            case eStopRollLeft: {
+                mBebopDrone.setRoll((byte) 0);
+                mBebopDrone.setFlag((byte) 0);
+            }
+            break;
+
+            //roll right
+            case eStartRollRight: {
+                mBebopDrone.setRoll((byte) action.gas);
+                mBebopDrone.setFlag((byte) 1);
+            }
+            break;
+            case eStopRollRight: {
+                mBebopDrone.setRoll((byte) 0);
+                mBebopDrone.setFlag((byte) 0);
             }
             break;
         }
