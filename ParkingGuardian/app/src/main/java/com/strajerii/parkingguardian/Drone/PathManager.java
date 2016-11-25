@@ -56,7 +56,9 @@ public class PathManager {
     private int _nextActionIndex = 0;
 
     public PathManager() {
-        int defaultPower = 5;
+        FlightPath oFlightPath = new FlightPath();
+        oFlightPath.getPath();
+        int defaultPower = 10;
 
         _path.add(new Action(EMoves.eTakeOff, 10, 2000) );
 

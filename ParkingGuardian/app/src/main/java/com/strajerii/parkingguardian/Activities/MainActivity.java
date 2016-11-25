@@ -10,6 +10,7 @@ import com.parrot.arsdk.ARSDK;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 
 import com.strajerii.parkingguardian.Drone.DroneDiscoverer;
+import com.strajerii.parkingguardian.Drone.FlightPath;
 import com.strajerii.parkingguardian.R;
 
 import java.util.List;
