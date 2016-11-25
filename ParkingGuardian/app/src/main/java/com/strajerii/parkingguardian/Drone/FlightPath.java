@@ -19,10 +19,10 @@ public class FlightPath {
 
     public boolean getPath( ArrayList<DroneAction> actionPath )
     {
-        File downloadDirectory =  Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        final File folder = new File(Environment.getExternalStorageDirectory() + "/ParkingGuardian/");
         String fileName = "FlightPath.txt";
 
-        File file = new File( downloadDirectory, fileName );
+        File file = new File( folder, fileName );
         try {
             BufferedReader br = new BufferedReader( new FileReader( file ) );
             String line;

@@ -61,6 +61,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button plateBtn = (Button) findViewById(R.id.plateBtn);
+        plateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, PlateRecognitionActivity.class);
+                //intent.putExtra(EXTRA_DEVICE_SERVICE, droneService);
+                startActivity(intent);
+            }
+        });
+
         // create drone discoverer
         droneDiscoverer = new DroneDiscoverer(this);
     }
