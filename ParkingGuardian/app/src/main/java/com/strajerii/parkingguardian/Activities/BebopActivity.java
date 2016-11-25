@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -48,7 +49,6 @@ public class BebopActivity extends AppCompatActivity {
         ARDiscoveryDeviceService service = intent.getParcelableExtra(MainActivity.EXTRA_DEVICE_SERVICE);
         mBebopDrone = new BebopDrone(this, service);
         mBebopDrone.addListener(mBebopListener);
-
     }
 
     @Override
@@ -94,6 +94,19 @@ public class BebopActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    private void takeOffOrLand() {
+        switch (mBebopDrone.getFlyingState()) {
+            case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
+                mBebopDrone.takeOff();
+                break;
+            case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
+            case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
+                mBebopDrone.land();
+                break;
+            default:
+        }
+    }
+
     private void initIHM() {
         mVideoView = (BebopVideoView) findViewById(R.id.videoView);
 
@@ -106,16 +119,7 @@ public class BebopActivity extends AppCompatActivity {
         mTakeOffLandBt = (Button) findViewById(R.id.takeOffOrLandBt);
         mTakeOffLandBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                switch (mBebopDrone.getFlyingState()) {
-                    case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
-                        mBebopDrone.takeOff();
-                        break;
-                    case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
-                    case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
-                        mBebopDrone.land();
-                        break;
-                    default:
-                }
+                takeOffOrLand();
             }
         });
 
@@ -347,6 +351,7 @@ public class BebopActivity extends AppCompatActivity {
             {
                 case ARCONTROLLER_DEVICE_STATE_RUNNING:
                     mConnectionProgressDialog.dismiss();
+                    takeOffOrLand();
                     break;
 
                 case ARCONTROLLER_DEVICE_STATE_STOPPED:
@@ -378,6 +383,14 @@ public class BebopActivity extends AppCompatActivity {
                     mTakeOffLandBt.setText("Land");
                     mTakeOffLandBt.setEnabled(true);
                     mDownloadBt.setEnabled(false);
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            takeOffOrLand();
+                        }
+                    }, 1000 * 10); // 10 seconds
                     break;
                 default:
                     mTakeOffLandBt.setEnabled(false);

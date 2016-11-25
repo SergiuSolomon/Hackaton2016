@@ -11,11 +11,10 @@
     tools:context=".Activities.MainActivity">
 
     <Button
-        android:id="@+id/droneBt"
+        android:id="@+id/droneBtn"
+        android:text="Searching the Drone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Drone"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:width="150dp"/>
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

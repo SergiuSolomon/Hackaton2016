@@ -26,7 +26,8 @@
         android:id="@+id/takePictureBt"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:width="150dp"/>
+        android:width="150dp"
+        android:visibility="gone"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -43,7 +44,8 @@
         android:id="@+id/yawRightBt"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="false"/>
+        android:layout_alignParentEnd="false"
+        android:visibility="gone"/>
 
     <Button
         android:layout_width="75dp"
@@ -53,7 +55,8 @@
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:width="50dp"/>
+        android:width="50dp"
+        android:visibility="gone"/>
 
     <Button
         android:layout_width="75dp"
@@ -62,7 +65,8 @@
         android:id="@+id/yawLeftBt"
         android:layout_below="@+id/gazUpBt"
         android:layout_toLeftOf="@+id/gazUpBt"
-        android:layout_toStartOf="@+id/gazUpBt"/>
+        android:layout_toStartOf="@+id/gazUpBt"
+        android:visibility="gone"/>
 
     <Button
         android:layout_width="75dp"
@@ -72,7 +76,8 @@
         android:width="20dp"
         android:layout_above="@+id/backBt"
         android:layout_toRightOf="@+id/backBt"
-        android:layout_toEndOf="@+id/backBt"/>
+        android:layout_toEndOf="@+id/backBt"
+        android:visibility="gone"/>
 
     <Button
         android:layout_width="110dp"
@@ -82,7 +87,8 @@
         android:layout_above="@+id/yawRightBt"
         android:layout_toLeftOf="@+id/yawRightBt"
         android:layout_toStartOf="@+id/yawRightBt"
-        android:width="110dp"/>
+        android:width="110dp"
+        android:visibility="gone"/>
 
     <Button
         android:layout_width="110dp"
@@ -92,7 +98,8 @@
         android:width="110dp"
         android:layout_below="@+id/yawRightBt"
         android:layout_toRightOf="@+id/yawLeftBt"
-        android:layout_toEndOf="@+id/yawLeftBt"/>
+        android:layout_toEndOf="@+id/yawLeftBt"
+        android:visibility="gone"/>
 
     <Button
         android:layout_width="110dp"
@@ -102,7 +109,8 @@
         android:layout_alignTop="@+id/gazUpBt"
         android:layout_toRightOf="@+id/rollLeftBt"
         android:layout_toEndOf="@+id/rollLeftBt"
-        android:width="110dp"/>
+        android:width="110dp"
+        android:visibility="gone"/>
 
     <Button
         android:layout_width="110dp"
@@ -112,7 +120,8 @@
         android:layout_below="@+id/rollLeftBt"
         android:layout_toRightOf="@+id/rollLeftBt"
         android:layout_toEndOf="@+id/rollLeftBt"
-        android:width="110dp"/>
+        android:width="110dp"
+        android:visibility="gone"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -121,7 +130,8 @@
         android:id="@+id/downloadBt"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:width="150dp"/>
+        android:width="150dp"
+        android:visibility="gone"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -156,7 +166,8 @@
         android:gravity="center_horizontal"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/rollLeftBt"
-        android:layout_toEndOf="@+id/rollLeftBt"/>
+        android:layout_toEndOf="@+id/rollLeftBt"
+        android:visibility="gone"/>
 
     <TextView
         android:layout_width="110dp"
@@ -168,5 +179,6 @@
         android:layout_alignTop="@+id/textView2"
         android:layout_alignRight="@+id/gazDownBt"
         android:layout_alignEnd="@+id/gazDownBt"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:visibility="gone"/>
 </RelativeLayout>

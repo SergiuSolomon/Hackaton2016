@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button droneBtn = (Button) findViewById(R.id.droneBt);
+        Button droneBtn = (Button) findViewById(R.id.droneBtn);
         droneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         public void onDronesListUpdated(List<ARDiscoveryDeviceService> dronesList) {
             if ( dronesList.size() == 1 ) {
                 droneService = dronesList.get(0);
-                Button droneBtn = (Button) findViewById(R.id.droneBt);
+                Button droneBtn = (Button) findViewById(R.id.droneBtn);
                 droneBtn.setText(droneService.getName());
             }
         }
