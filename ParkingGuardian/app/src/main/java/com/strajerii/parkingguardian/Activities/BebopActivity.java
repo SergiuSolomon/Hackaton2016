@@ -359,6 +359,11 @@ public class BebopActivity extends AppCompatActivity {
                     if (_pathManager.hasActions()) {
                         PathManager.Action action = _pathManager.getNextAction();
                         doAction(action);
+                        try {
+                            Thread.sleep(action.time);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                     break;
 
@@ -395,17 +400,12 @@ public class BebopActivity extends AppCompatActivity {
                     while(_pathManager.hasActions()) {
                         PathManager.Action action = _pathManager.getNextAction();
                         doAction(action);
-                    }
-
-                    /*
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            takeOffOrLand();
+                        try {
+                            Thread.sleep(action.time);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    }, 1000 * 10); // 10 seconds
-                    */
+                    }
                     break;
                 default:
                     mTakeOffLandBt.setEnabled(false);
@@ -504,18 +504,17 @@ public class BebopActivity extends AppCompatActivity {
             }
             break;
 
-            case eForward: {
+            case eStartForward: {
                 // start going forward
                 mBebopDrone.setPitch((byte) action.gas);
                 mBebopDrone.setFlag((byte) 1);
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBebopDrone.setPitch((byte) 0);
-                        mBebopDrone.setFlag((byte) 0);
-                    }
-                }, action.time);
+            }
+            break;
+
+            case eStopForward: {
+                // start going forward
+                mBebopDrone.setPitch((byte) 0);
+                mBebopDrone.setFlag((byte) 0);
             }
             break;
 

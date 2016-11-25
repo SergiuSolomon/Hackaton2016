@@ -16,7 +16,8 @@ public class PathManager {
         eDown,
         eLeft,
         eRight,
-        eForward,
+        eStartForward,
+        eStopForward,
         eBackward
     }
 
@@ -36,8 +37,9 @@ public class PathManager {
     private int _nextActionIndex = 0;
 
     public PathManager() {
-        _path.add(new Action(EMoves.eTakeOff, 10, 1000) );
-        _path.add(new Action(EMoves.eForward, 50, 5000) );
+        _path.add(new Action(EMoves.eTakeOff, 10, 2000) );
+        _path.add(new Action(EMoves.eStartForward, 5, 3000) );
+        _path.add(new Action(EMoves.eStopForward, 0, 1000) );
         _path.add(new Action(EMoves.eLand, 5, 1000) );
     }
 
