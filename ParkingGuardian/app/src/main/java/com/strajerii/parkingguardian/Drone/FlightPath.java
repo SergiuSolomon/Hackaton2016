@@ -32,10 +32,11 @@ public class FlightPath {
                 for ( EMoves  eMove : EMoves.values()  ) {
                     if( Objects.equals( eMove.toString(), split[0] ) ) {
                         eMoveToAdd = eMove;
+                        break;
                     }
                 }
-                int nPos = Integer.getInteger( split[1] );
-                int nTime = Integer.getInteger( split[2] );
+                int nPos = Integer.parseInt( split[1] );
+                int nTime = Integer.parseInt( split[2] );
                 actionPath.add( new DroneAction( eMoveToAdd, nPos, nTime ) );
             }
             br.close();
