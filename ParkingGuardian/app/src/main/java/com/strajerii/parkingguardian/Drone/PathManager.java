@@ -13,6 +13,8 @@ public class PathManager {
         eTakeOff,
         eLand,
 
+        eTakePicture,
+
         eStartUp,
         eStopUp,
 
@@ -54,7 +56,7 @@ public class PathManager {
     private int _nextActionIndex = 0;
 
     public PathManager() {
-        int defaultPower = 10;
+        int defaultPower = 5;
 
         _path.add(new Action(EMoves.eTakeOff, 10, 2000) );
 

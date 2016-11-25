@@ -410,7 +410,7 @@ public class BebopActivity extends AppCompatActivity {
                     _pathManager.resetToStart();
                     break;
                 default:
-                    mTakeOffLandBt.setEnabled(false);
+                    //mTakeOffLandBt.setEnabled(false);
                     mDownloadBt.setEnabled(false);
             }
         }
@@ -480,6 +480,17 @@ public class BebopActivity extends AppCompatActivity {
             case eTakeOff:
             case eLand:
                 takeOffOrLand();
+                break;
+
+            //take picture
+            case eTakePicture:
+                mBebopDrone.setGaz((byte) 0);
+                mBebopDrone.setPitch((byte) 0);
+                mBebopDrone.setFlag((byte) 0);
+                mBebopDrone.setYaw((byte) 0);
+                mBebopDrone.setRoll((byte) 0);
+
+                mBebopDrone.takePicture();
                 break;
 
             //up
