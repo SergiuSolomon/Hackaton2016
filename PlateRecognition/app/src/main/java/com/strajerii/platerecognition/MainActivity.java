@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView resultTextView;
     private ImageView imageView;
 
+    private static final String nrinmat = "numar-inmatriculare-5.jpg";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,39 +82,50 @@ public class MainActivity extends AppCompatActivity {
             AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {
-                    String result = OpenALPR.Factory.create(MainActivity.this, ANDROID_DATA_DIR).recognizeWithCountryRegionNConfig("eu", "", destination.getAbsolutePath(), openAlprConfFile, 10);
+                    //final String path = ANDROID_DATA_DIR + File.separatorChar + "runtime_data" + File.separatorChar + "numar-inmatriculare-5.jpg";
+                    final File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    File[] fileList = downloads.listFiles();
+                    for ( int i = 0; i < fileList.length; i++ ) {
+                        File file = fileList[i];
+                        if ( file.getAbsolutePath().toLowerCase().contains( nrinmat.toLowerCase() ) ) {
+                            Log.d( "OPEN ALPR", "Found file at absolute path: " + file.getAbsolutePath() );
+                            Log.d( "OPEN ALPR", "Found file with path: " + file.getPath() );
+                            Log.d( "OPEN ALPR", "Found file with name: " + file.getName() );
 
-                    Log.d("OPEN ALPR", result);
+                            String result = OpenALPR.Factory.create(MainActivity.this, ANDROID_DATA_DIR).recognizeWithCountryRegionNConfig("eu", "", file.getAbsolutePath(), openAlprConfFile, 10);
 
-                    try {
-                        final Results results = new Gson().fromJson(result, Results.class);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (results == null || results.getResults() == null || results.getResults().size() == 0) {
-                                    Toast.makeText(MainActivity.this, "It was not possible to detect the licence plate.", Toast.LENGTH_LONG).show();
-                                    resultTextView.setText("It was not possible to detect the licence plate.");
-                                } else {
-                                    resultTextView.setText("Plate: " + results.getResults().get(0).getPlate()
-                                            // Trim confidence to two decimal places
-                                            + " Confidence: " + String.format("%.2f", results.getResults().get(0).getConfidence()) + "%"
-                                            // Convert processing time to seconds and trim to two decimal places
-                                            + " Processing time: " + String.format("%.2f", ((results.getProcessing_time_ms() / 1000.0) % 60)) + " seconds");
-                                }
+                            Log.d("OPEN ALPR", result);
+
+                            try {
+                                final Results results = new Gson().fromJson(result, Results.class);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (results == null || results.getResults() == null || results.getResults().size() == 0) {
+                                            Toast.makeText(MainActivity.this, "It was not possible to detect the licence plate.", Toast.LENGTH_LONG).show();
+                                            resultTextView.setText("It was not possible to detect the licence plate.");
+                                        } else {
+                                            resultTextView.setText("Plate: " + results.getResults().get(0).getPlate()
+                                                    // Trim confidence to two decimal places
+                                                    + " Confidence: " + String.format("%.2f", results.getResults().get(0).getConfidence()) + "%"
+                                                    // Convert processing time to seconds and trim to two decimal places
+                                                    + " Processing time: " + String.format("%.2f", ((results.getProcessing_time_ms() / 1000.0) % 60)) + " seconds");
+                                        }
+                                    }
+                                });
+
+                            } catch (JsonSyntaxException exception) {
+                                final ResultsError resultsError = new Gson().fromJson(result, ResultsError.class);
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        resultTextView.setText(resultsError.getMsg());
+                                    }
+                                });
                             }
-                        });
-
-                    } catch (JsonSyntaxException exception) {
-                        final ResultsError resultsError = new Gson().fromJson(result, ResultsError.class);
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                resultTextView.setText(resultsError.getMsg());
-                            }
-                        });
+                        }
                     }
-
                     progress.dismiss();
                 }
             });
