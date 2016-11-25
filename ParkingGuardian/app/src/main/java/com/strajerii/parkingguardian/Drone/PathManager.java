@@ -39,6 +39,8 @@ public class PathManager {
     public PathManager() {
         FlightPath oFlightPath = new FlightPath();
         oFlightPath.getPath();
+        int defaultPower = 10;
+
         _path.add(new Action(EMoves.eTakeOff, 10, 2000) );
         _path.add(new Action(EMoves.eStartForward, 5, 3000) );
         _path.add(new Action(EMoves.eStopForward, 0, 1000) );

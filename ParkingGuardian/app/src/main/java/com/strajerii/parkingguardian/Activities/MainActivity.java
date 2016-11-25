@@ -32,9 +32,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FlightPath oFlightPath = new FlightPath();
-        oFlightPath.getPath();
-
         Button droneBtn = (Button) findViewById(R.id.droneBtn);
         droneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
