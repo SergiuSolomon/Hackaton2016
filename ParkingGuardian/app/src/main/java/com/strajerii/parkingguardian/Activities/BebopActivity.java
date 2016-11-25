@@ -3,6 +3,7 @@ package com.strajerii.parkingguardian.Activities;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.strajerii.parkingguardian.Drone.BebopDrone;
+import com.strajerii.parkingguardian.Drone.PathManager;
 import com.strajerii.parkingguardian.R;
 import com.strajerii.parkingguardian.View.BebopVideoView;
 
@@ -34,6 +36,8 @@ public class BebopActivity extends AppCompatActivity {
     private TextView mBatteryLabel;
     private Button mTakeOffLandBt;
     private Button mDownloadBt;
+
+    PathManager _pathManager = new PathManager();
 
     private int mNbMaxDownload;
     private int mCurrentDownloadIndex;
@@ -351,7 +355,11 @@ public class BebopActivity extends AppCompatActivity {
             {
                 case ARCONTROLLER_DEVICE_STATE_RUNNING:
                     mConnectionProgressDialog.dismiss();
-                    takeOffOrLand();
+
+                    if (_pathManager.hasActions()) {
+                        PathManager.Action action = _pathManager.getNextAction();
+                        doAction(action);
+                    }
                     break;
 
                 case ARCONTROLLER_DEVICE_STATE_STOPPED:
@@ -384,6 +392,12 @@ public class BebopActivity extends AppCompatActivity {
                     mTakeOffLandBt.setEnabled(true);
                     mDownloadBt.setEnabled(false);
 
+                    while(_pathManager.hasActions()) {
+                        PathManager.Action action = _pathManager.getNextAction();
+                        doAction(action);
+                    }
+
+                    /*
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -391,6 +405,7 @@ public class BebopActivity extends AppCompatActivity {
                             takeOffOrLand();
                         }
                     }, 1000 * 10); // 10 seconds
+                    */
                     break;
                 default:
                     mTakeOffLandBt.setEnabled(false);
@@ -455,4 +470,69 @@ public class BebopActivity extends AppCompatActivity {
             }
         }
     };
+
+    private void doAction( PathManager.Action action ) {
+        switch( action.eMove) {
+            case eTakeOff:
+            case eLand:
+                takeOffOrLand();
+                break;
+
+            case eUp: {
+                // start going up
+                mBebopDrone.setGaz((byte) action.gas);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBebopDrone.setGaz((byte) 0);
+                    }
+                }, action.time);
+            }
+            break;
+
+            case eDown: {
+                // start going down
+                mBebopDrone.setGaz((byte) -action.gas);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBebopDrone.setGaz((byte) 0);
+                    }
+                }, action.time);
+            }
+            break;
+
+            case eForward: {
+                // start going forward
+                mBebopDrone.setPitch((byte) action.gas);
+                mBebopDrone.setFlag((byte) 1);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBebopDrone.setPitch((byte) 0);
+                        mBebopDrone.setFlag((byte) 0);
+                    }
+                }, action.time);
+            }
+            break;
+
+            case eBackward: {
+                // start going forward
+                mBebopDrone.setPitch((byte) -action.gas);
+                mBebopDrone.setFlag((byte) 1);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBebopDrone.setPitch((byte) 0);
+                        mBebopDrone.setFlag((byte) 0);
+                    }
+                }, action.time);
+            }
+            break;
+        }
+    }
 }
