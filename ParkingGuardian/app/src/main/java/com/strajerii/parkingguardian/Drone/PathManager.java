@@ -37,6 +37,8 @@ public class PathManager {
     private int _nextActionIndex = 0;
 
     public PathManager() {
+        FlightPath oFlightPath = new FlightPath();
+        oFlightPath.getPath();
         _path.add(new Action(EMoves.eTakeOff, 10, 2000) );
         _path.add(new Action(EMoves.eStartForward, 5, 3000) );
         _path.add(new Action(EMoves.eStopForward, 0, 1000) );

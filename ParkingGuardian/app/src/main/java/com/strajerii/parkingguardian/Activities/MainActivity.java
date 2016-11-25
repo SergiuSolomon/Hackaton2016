@@ -10,6 +10,7 @@ import com.parrot.arsdk.ARSDK;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 
 import com.strajerii.parkingguardian.Drone.DroneDiscoverer;
+import com.strajerii.parkingguardian.Drone.FlightPath;
 import com.strajerii.parkingguardian.R;
 
 import java.util.List;
@@ -30,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FlightPath oFlightPath = new FlightPath();
+        oFlightPath.getPath();
 
         Button droneBtn = (Button) findViewById(R.id.droneBtn);
         droneBtn.setOnClickListener(new View.OnClickListener() {
