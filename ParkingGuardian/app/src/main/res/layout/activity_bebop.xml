@@ -26,8 +26,7 @@
         android:id="@+id/takePictureBt"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:width="150dp"
-        android:visibility="gone"/>
+        android:width="150dp"/>
 
     <Button
         android:layout_width="wrap_content"
