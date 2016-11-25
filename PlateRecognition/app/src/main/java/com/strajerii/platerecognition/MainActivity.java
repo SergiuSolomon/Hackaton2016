@@ -1,30 +1,24 @@
 package com.strajerii.platerecognition;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.squareup.picasso.Picasso;
 
 import org.openalpr.OpenALPR;
+import org.openalpr.model.Result;
 import org.openalpr.model.Results;
 import org.openalpr.model.ResultsError;
 
@@ -37,16 +31,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
-
-    private static final int REQUEST_IMAGE = 100;
-    private static final int STORAGE=1;
+public class MainActivity extends AppCompatActivity
+{
+    private static final int STORAGE = 1;
     private String ANDROID_DATA_DIR;
-    private static File destination;
     private TextView resultTextView;
-    private ImageView imageView;
 
-    private static final String nrinmat = "numar-inmatriculare-5.jpg";
+    private static final String lineSeparator = System.getProperty("line.separator");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,74 +53,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         resultTextView = (TextView) findViewById(R.id.textView);
-        imageView = (ImageView) findViewById(R.id.imageView);
-
         resultTextView.setText("Press the button below to start a request.");
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE && resultCode == Activity.RESULT_OK) {
-            final ProgressDialog progress = ProgressDialog.show(this, "Loading", "Parsing result...", true);
-            final String openAlprConfFile = ANDROID_DATA_DIR + File.separatorChar + "runtime_data" + File.separatorChar + "openalpr.conf";
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 10;
-
-            // Picasso requires permission.WRITE_EXTERNAL_STORAGE
-            Picasso.with(MainActivity.this).load(destination).fit().centerCrop().into(imageView);
-            resultTextView.setText("Processing");
-
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    //final String path = ANDROID_DATA_DIR + File.separatorChar + "runtime_data" + File.separatorChar + "numar-inmatriculare-5.jpg";
-                    final File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                    File[] fileList = downloads.listFiles();
-                    for ( int i = 0; i < fileList.length; i++ ) {
-                        File file = fileList[i];
-                        if ( file.getAbsolutePath().toLowerCase().contains( nrinmat.toLowerCase() ) ) {
-                            Log.d( "OPEN ALPR", "Found file at absolute path: " + file.getAbsolutePath() );
-                            Log.d( "OPEN ALPR", "Found file with path: " + file.getPath() );
-                            Log.d( "OPEN ALPR", "Found file with name: " + file.getName() );
-
-                            String result = OpenALPR.Factory.create(MainActivity.this, ANDROID_DATA_DIR).recognizeWithCountryRegionNConfig("eu", "", file.getAbsolutePath(), openAlprConfFile, 10);
-
-                            Log.d("OPEN ALPR", result);
-
-                            try {
-                                final Results results = new Gson().fromJson(result, Results.class);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (results == null || results.getResults() == null || results.getResults().size() == 0) {
-                                            Toast.makeText(MainActivity.this, "It was not possible to detect the licence plate.", Toast.LENGTH_LONG).show();
-                                            resultTextView.setText("It was not possible to detect the licence plate.");
-                                        } else {
-                                            resultTextView.setText("Plate: " + results.getResults().get(0).getPlate()
-                                                    // Trim confidence to two decimal places
-                                                    + " Confidence: " + String.format("%.2f", results.getResults().get(0).getConfidence()) + "%"
-                                                    // Convert processing time to seconds and trim to two decimal places
-                                                    + " Processing time: " + String.format("%.2f", ((results.getProcessing_time_ms() / 1000.0) % 60)) + " seconds");
-                                        }
-                                    }
-                                });
-
-                            } catch (JsonSyntaxException exception) {
-                                final ResultsError resultsError = new Gson().fromJson(result, ResultsError.class);
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        resultTextView.setText(resultsError.getMsg());
-                                    }
-                                });
-                            }
-                        }
-                    }
-                    progress.dismiss();
-                }
-            });
-        }
     }
 
     private void checkPermission() {
@@ -142,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             String[] params = permissions.toArray(new String[permissions.size()]);
             ActivityCompat.requestPermissions(this, params, STORAGE);
         } else { // We already have permissions, so handle as normal
-            takePicture();
+            processFrames();
         }
     }
 
@@ -160,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 Boolean storage = perms.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
                 if (storage) {
                     // permission was granted, yay!
-                    takePicture();
+                    processFrames();
                 } else {
                     // Permission Denied
                     Toast.makeText(this, "Storage permission is needed to analyse the picture.", Toast.LENGTH_LONG).show();
@@ -177,27 +101,107 @@ public class MainActivity extends AppCompatActivity {
         return df.format(date);
     }
 
-    public void takePicture() {
+    public void processFrames() {
         // Use a folder to store all results
-        File folder = new File(Environment.getExternalStorageDirectory() + "/OpenALPR/");
-        if (!folder.exists()) {
-            folder.mkdir();
+//        File folder = new File(Environment.getExternalStorageDirectory() + "/OpenALPR/");
+//        if (!folder.exists()) {
+//            folder.mkdir();
+//        }
+//
+//        // Generate the path for the next photo
+//        String name = dateToString(new Date(), "yyyy-MM-dd-hh-mm-ss");
+//        destination = new File(folder, name + ".jpg");
+
+//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(destination));
+//        startActivityForResult(intent, REQUEST_IMAGE);
+
+        final ProgressDialog progress = ProgressDialog.show(this, "Loading", "Parsing result...", true);
+        final String openAlprConfFile = ANDROID_DATA_DIR + File.separatorChar + "runtime_data" + File.separatorChar + "openalpr.conf";
+
+        resultTextView.setText("Processing" + lineSeparator);
+
+        final OpenALPR alpr = OpenALPR.Factory.create(MainActivity.this, ANDROID_DATA_DIR);
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                final File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File[] fileList = downloads.listFiles();
+                for ( int i = 0; i < fileList.length; i++ ) {
+                    File file = fileList[i];
+                    String absoluteFilePath = file.getAbsolutePath().toLowerCase();
+                    if ( absoluteFilePath.contains( ".jpg" ) && absoluteFilePath.contains( "bebop2" ) ) {
+                        Log.d( "OPEN ALPR", "Found file at absolute path: " + file.getAbsolutePath() );
+                        Log.d( "OPEN ALPR", "Found file with path: " + file.getPath() );
+                        Log.d( "OPEN ALPR", "Found file with name: " + file.getName() );
+
+                        String result = alpr.recognizeWithCountryRegionNConfig("eu", "", absoluteFilePath, openAlprConfFile, 10);
+
+                        Log.d("OPEN ALPR", result );
+
+                        addRecognitionResult( result, file.getName() );
+                    }
+                    if ( i == fileList.length - 1 ) {
+                        makeToast("Processing finished");
+                    }
+                }
+                progress.dismiss();
+            }
+        });
+    }
+
+    private void addRecognitionResult( String strResult, String strFileName )
+    {
+        String message = "Output for " + strFileName;
+        try {
+            final Results results = new Gson().fromJson( strResult, Results.class );
+            if (results == null || results.getResults() == null || results.getResults().size() == 0) {
+                message += "It was not possible to detect the licence plate.";
+            } else {
+                int iPlates =  results.getResults().size();
+                for ( int i = 0; i < iPlates; i++ ) {
+                    Result result = results.getResults().get( i );
+                    message += "Plate " + i + ":" + result.getPlate()
+                            // Trim confidence to two decimal places
+                            + " Confidence: " + String.format("%.2f", result.getConfidence()) + "%" + lineSeparator;
+                }
+                // Convert processing time to seconds and trim to two decimal places
+                message += " Processing time: " + String.format("%.2f", ((results.getProcessing_time_ms() / 1000.0) % 60)) + " seconds";
+            }
+        } catch ( JsonSyntaxException exception ) {
+            try {
+                final ResultsError resultsError = new Gson().fromJson(strResult, ResultsError.class);
+                message += resultsError.getMsg();
+            } catch ( JsonSyntaxException e ) {
+                message += "Failed to process error result. Exception " + e.getMessage();
+            }
         }
+        printInTextView( message + lineSeparator );
+    }
 
-        // Generate the path for the next photo
-        String name = dateToString(new Date(), "yyyy-MM-dd-hh-mm-ss");
-        destination = new File(folder, name + ".jpg");
+    private void printInTextView( final String message )
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                resultTextView.append( message );
+            }
+        });
+    }
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(destination));
-        startActivityForResult(intent, REQUEST_IMAGE);
+    private void makeToast( final String message )
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText( MainActivity.this, message, Toast.LENGTH_LONG ).show();
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (destination != null) {// Picasso does not seem to have an issue with a null value, but to be safe
-            Picasso.with(MainActivity.this).load(destination).fit().centerCrop().into(imageView);
-        }
     }
 }

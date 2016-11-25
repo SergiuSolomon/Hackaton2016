@@ -23,6 +23,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.google.code.gson:gson:2.5'
-    compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.SandroMachado:openalpr-android:1.1.1'
 }
