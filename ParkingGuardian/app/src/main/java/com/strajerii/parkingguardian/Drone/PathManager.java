@@ -54,10 +54,35 @@ public class PathManager {
     private int _nextActionIndex = 0;
 
     public PathManager() {
+        int defaultPower = 10;
+
         _path.add(new Action(EMoves.eTakeOff, 10, 2000) );
-        _path.add(new Action(EMoves.eStartForward, 5, 3000) );
+
+        _path.add(new Action(EMoves.eStartUp, defaultPower, 1500) );
+        _path.add(new Action(EMoves.eStopUp, 0, 1000) );
+
+        _path.add(new Action(EMoves.eStartDown, defaultPower, 1500) );
+        _path.add(new Action(EMoves.eStopDown, 0, 1000) );
+
+        _path.add(new Action(EMoves.eStartForward, defaultPower, 3000) );
         _path.add(new Action(EMoves.eStopForward, 0, 1000) );
-        _path.add(new Action(EMoves.eLand, 5, 1000) );
+
+        _path.add(new Action(EMoves.eStartBackward, defaultPower, 3000) );
+        _path.add(new Action(EMoves.eStopBackward, 0, 1000) );
+
+        _path.add(new Action(EMoves.eStartYawLeft, defaultPower, 3000) );
+        _path.add(new Action(EMoves.eStopYawLeft, 0, 1000) );
+
+        _path.add(new Action(EMoves.eStartYawRight, defaultPower, 3000) );
+        _path.add(new Action(EMoves.eStopYawRight, 0, 1000) );
+
+        _path.add(new Action(EMoves.eStartRollLeft, defaultPower, 3000) );
+        _path.add(new Action(EMoves.eStopRollLeft, 0, 1000) );
+
+        _path.add(new Action(EMoves.eStartRollRight, defaultPower, 3000) );
+        _path.add(new Action(EMoves.eStopRollRight, 0, 1000) );
+
+        _path.add(new Action(EMoves.eLand, defaultPower, 1000) );
     }
 
     public Action getNextAction() {
@@ -70,5 +95,9 @@ public class PathManager {
 
     public boolean hasActions() {
         return ( _nextActionIndex <= ( _path.size() - 1 ) );
+    }
+
+    public void resetToStart() {
+        _nextActionIndex = 0;
     }
 }

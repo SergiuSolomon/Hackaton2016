@@ -406,6 +406,8 @@ public class BebopActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+
+                    _pathManager.resetToStart();
                     break;
                 default:
                     mTakeOffLandBt.setEnabled(false);
@@ -472,6 +474,8 @@ public class BebopActivity extends AppCompatActivity {
     };
 
     private void doAction( PathManager.Action action ) {
+        Log.d("Bebop activity", "action: " + action.toString() );
+
         switch( action.eMove) {
             case eTakeOff:
             case eLand:
