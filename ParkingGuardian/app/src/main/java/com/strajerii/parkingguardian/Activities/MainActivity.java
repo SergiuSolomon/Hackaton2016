@@ -11,8 +11,10 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 
 import com.strajerii.parkingguardian.Drone.DroneDiscoverer;
 import com.strajerii.parkingguardian.Drone.FlightPath;
+import com.strajerii.parkingguardian.Drone.PlateNumberDB;
 import com.strajerii.parkingguardian.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,6 +43,21 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra(EXTRA_DEVICE_SERVICE, droneService);
                     startActivity(intent);
                 }
+            }
+        });
+
+        Button checkPlates = (Button) findViewById(R.id.checkPlatesBtn);
+        checkPlates.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PlateNumberDB platesDB = new PlateNumberDB();
+
+                ArrayList<String> currentPlates = new ArrayList<>();
+                currentPlates.add("BV-26-MJK");
+                currentPlates.add("BV-27-MJK");
+                currentPlates.add("BV-28-MJK");
+
+                ArrayList<String> foreignPlates = platesDB.checkPlates(currentPlates);
             }
         });
 
