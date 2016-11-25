@@ -1,7 +1,10 @@
 package com.strajerii.parkingguardian.Activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.parrot.arsdk.ARSDK;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
@@ -12,8 +15,10 @@ import com.strajerii.parkingguardian.R;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String EXTRA_DEVICE_SERVICE = "EXTRA_DEVICE_SERVICE";
 
-    public DroneDiscoverer mDroneDiscoverer;
+    public DroneDiscoverer droneDiscoverer = null;
+    public ARDiscoveryDeviceService droneService = null;
 
     // this block loads the native libraries
     // it is mandatory
@@ -26,8 +31,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Button droneBtn = (Button) findViewById(R.id.droneBtn);
+        droneBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (droneService != null) {
+                    Intent intent = new Intent(MainActivity.this, BebopActivity.class);
+                    intent.putExtra(EXTRA_DEVICE_SERVICE, droneService);
+                    startActivity(intent);
+                }
+            }
+        });
+
         // create drone discoverer
-        mDroneDiscoverer = new DroneDiscoverer(this);
+        droneDiscoverer = new DroneDiscoverer(this);
     }
 
     @Override
@@ -35,13 +52,13 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onResume();
 
-        if (mDroneDiscoverer != null) {
+        if (droneDiscoverer != null) {
             // setup the drone discoverer and register as listener
-            mDroneDiscoverer.setup();
-            mDroneDiscoverer.addListener(mDiscovererListener);
+            droneDiscoverer.setup();
+            droneDiscoverer.addListener(mDiscovererListener);
 
             // start discovering
-            mDroneDiscoverer.startDiscovering();
+            droneDiscoverer.startDiscovering();
         }
     }
 
@@ -51,10 +68,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         // clean the drone discoverer object
-        if (mDroneDiscoverer != null) {
-            mDroneDiscoverer.stopDiscovering();
-            mDroneDiscoverer.cleanup();
-            mDroneDiscoverer.removeListener(mDiscovererListener);
+        if (droneDiscoverer != null) {
+            droneDiscoverer.stopDiscovering();
+            droneDiscoverer.cleanup();
+            droneDiscoverer.removeListener(mDiscovererListener);
         }
     }
 
@@ -62,7 +79,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onDronesListUpdated(List<ARDiscoveryDeviceService> dronesList) {
-            int it = 0;
+            if ( dronesList.size() == 1 ) {
+                droneService = dronesList.get(0);
+                Button droneBtn = (Button) findViewById(R.id.droneBtn);
+                droneBtn.setText(droneService.getName());
+            }
         }
     };
 }
