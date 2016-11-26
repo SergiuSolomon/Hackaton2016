@@ -56,8 +56,16 @@ public class MainActivity extends AppCompatActivity {
                 currentPlates.add("BV-26-MJK");
                 currentPlates.add("BV-27-MJK");
                 currentPlates.add("BV-28-MJK");
+                currentPlates.add("BV-29-MJK");
+                currentPlates.add("BV-30-MJK");
+                currentPlates.add("BV-31-MJK");
+                currentPlates.add("BV-32-MJK");
 
                 ArrayList<String> foreignPlates = platesDB.checkPlates(currentPlates);
+
+                Intent intent = new Intent(MainActivity.this, ForeignPlatesActivity.class);
+                intent.putExtra("ForeignPlates", foreignPlates);
+                startActivity(intent);
             }
         });
 

@@ -2,6 +2,7 @@ package com.strajerii.parkingguardian.Activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.strajerii.parkingguardian.Drone.PlateNumberDB;
 import com.strajerii.parkingguardian.R;
 
 import com.google.gson.Gson;
@@ -38,6 +40,8 @@ public class PlateRecognitionActivity extends AppCompatActivity
     private static final int STORAGE = 1;
     private String ANDROID_DATA_DIR;
     private TextView resultTextView;
+
+    ArrayList<String> parkedPlates = new ArrayList<>();
 
     private static final String lineSeparator = System.getProperty("line.separator");
 
@@ -135,6 +139,8 @@ public class PlateRecognitionActivity extends AppCompatActivity
                     return;
                 }
 
+                parkedPlates.clear();
+
                 for ( int i = 0; i < fileList.length; i++ ) {
                     File file = fileList[i];
                     String absoluteFilePath = file.getAbsolutePath().toLowerCase();
@@ -153,6 +159,17 @@ public class PlateRecognitionActivity extends AppCompatActivity
                         makeToast("Processing finished");
                     }
                 }
+
+                PlateNumberDB platesDB = new PlateNumberDB();
+                ArrayList<String> foreignPlates = platesDB.checkPlates(parkedPlates);
+                if (foreignPlates.size() > 0) {
+                    Intent intent = new Intent(PlateRecognitionActivity.this, ForeignPlatesActivity.class);
+                    intent.putExtra("ForeignPlates", foreignPlates);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText( PlateRecognitionActivity.this, "No foreign cars", Toast.LENGTH_LONG ).show();
+                }
+
                 progress.dismiss();
             }
         });
@@ -172,6 +189,7 @@ public class PlateRecognitionActivity extends AppCompatActivity
                     message += "Plate " + i + ":" + result.getPlate()
                             // Trim confidence to two decimal places
                             + " Confidence: " + String.format("%.2f", result.getConfidence()) + "%" + lineSeparator;
+                    parkedPlates.add(result.getPlate());
                 }
                 // Convert processing time to seconds and trim to two decimal places
                 message += " Processing time: " + String.format("%.2f", ((results.getProcessing_time_ms() / 1000.0) % 60)) + " seconds";
