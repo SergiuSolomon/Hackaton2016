@@ -16,13 +16,14 @@ public class DroneActionRunnable implements Runnable
     @Override
     public void run()
     {
-        while(_pathManager.hasActions()) {
+        while(_pathManager.hasActions())
+        {
             DroneAction action = _pathManager.getNextAction();
-            doAction(action);
-            try {
-                Thread.sleep(action.time);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            doAction( action );
+
+            if( action.shouldWait() ){
+                //we need to wait drone to finish the given action
+                mBebopDrone.waitDrone();
             }
         }
     }
@@ -56,104 +57,13 @@ public class DroneActionRunnable implements Runnable
             //take picture
             case eTakePicture:
                 Log.d("Bebop activity", "action take picture" );
-                mBebopDrone.setGaz((byte) 0);
-                mBebopDrone.setPitch((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
-                mBebopDrone.setYaw((byte) 0);
-                mBebopDrone.setRoll((byte) 0);
-
                 mBebopDrone.takePicture();
                 break;
 
             //up
-            case eStartUp: {
+            case eMove: {
                 Log.d("Bebop activity", "action start up" );
-                mBebopDrone.setGaz((byte) action.gas);
-            }
-            break;
-            case eStopUp: {
-                Log.d("Bebop activity", "action stop up" );
-                mBebopDrone.setGaz((byte) 0);
-            }
-            break;
-
-            //down
-            case eStartDown: {
-                mBebopDrone.setGaz((byte) -action.gas);
-            }
-            break;
-            case eStopDown: {
-                mBebopDrone.setGaz((byte) 0);
-            }
-            break;
-
-            //forward
-            case eStartForward: {
-                mBebopDrone.setPitch((byte) action.gas);
-                mBebopDrone.setFlag((byte) 1);
-            }
-            break;
-            case eStopForward: {
-                mBebopDrone.setPitch((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
-            }
-            break;
-
-            //backward
-            case eStartBackward: {
-                mBebopDrone.setPitch((byte) -action.gas);
-                mBebopDrone.setFlag((byte) 1);
-            }
-            break;
-            case eStopBackward: {
-                mBebopDrone.setPitch((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
-            }
-            break;
-
-            // yaw left
-            case eStartYawLeft: {
-               Log.d("Bebop activity", "action start yaw left" );
-                mBebopDrone.setYaw((byte) -action.gas);
-            }
-            break;
-            case eStopYawLeft: {
-               Log.d("Bebop activity", "action stop yaw left" );
-                mBebopDrone.setYaw((byte) 0);
-            }
-            break;
-
-            //yaw right
-            case eStartYawRight: {
-                mBebopDrone.setYaw((byte) action.gas);
-            }
-            break;
-            case eStopYawRight: {
-                mBebopDrone.setYaw((byte) 0);
-            }
-            break;
-
-            // roll left
-            case eStartRollLeft: {
-                mBebopDrone.setRoll((byte) -action.gas);
-                mBebopDrone.setFlag((byte) 1);
-            }
-            break;
-            case eStopRollLeft: {
-                mBebopDrone.setRoll((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
-            }
-            break;
-
-            //roll right
-            case eStartRollRight: {
-                mBebopDrone.setRoll((byte) action.gas);
-                mBebopDrone.setFlag((byte) 1);
-            }
-            break;
-            case eStopRollRight: {
-                mBebopDrone.setRoll((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
+                mBebopDrone.moveBy( action.moveData );
             }
             break;
         }

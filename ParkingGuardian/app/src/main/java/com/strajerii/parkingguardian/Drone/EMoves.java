@@ -3,31 +3,8 @@ package com.strajerii.parkingguardian.Drone;
 public enum EMoves
 {
     eTakeOff,
+    eMove,
     eLand,
 
-    eTakePicture,
-
-    eStartUp,
-    eStopUp,
-
-    eStartDown,
-    eStopDown,
-
-    eStartForward,
-    eStopForward,
-
-    eStartBackward,
-    eStopBackward,
-
-    eStartYawLeft,
-    eStopYawLeft,
-
-    eStartYawRight,
-    eStopYawRight,
-
-    eStartRollLeft,
-    eStopRollLeft,
-
-    eStartRollRight,
-    eStopRollRight,
+    eTakePicture
 }
