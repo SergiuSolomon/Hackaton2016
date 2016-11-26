@@ -226,7 +226,25 @@ public class SDCardModule {
         ArrayList<ARDataTransferMedia> matchingMedias = new ArrayList<>();
         for (ARDataTransferMedia media : mediaList) {
             if (media.getName().contains(runId)) {
-                matchingMedias.add(media);
+
+                //mia - debug info
+                int nContent = media.describeContents();
+                String filePath = media.getFilePath();
+                String name = media.getName();
+                String remotePath = media.getRemotePath();
+                Log.d(TAG, "Media info - getRunIdMatchingMedias " + runId + " - " );
+                Log.d(TAG, " * nContent: " + nContent  );
+                Log.d(TAG, " * filePath: " + filePath  );
+                Log.d(TAG, " * name: " + name  );
+                Log.d(TAG, " * remotePath: " + remotePath );
+
+                int pointPos = name.lastIndexOf('.');
+                if (pointPos >= 0) {
+                    String extFile = name.substring( pointPos + 1 );
+                    if( extFile == "jpg" ){
+                        matchingMedias.add( media );
+                    }
+                }
             }
 
             // exit if the async task is cancelled
@@ -247,6 +265,24 @@ public class SDCardModule {
             // convert date in string to calendar
             String dateStr = media.getDate();
             try {
+                //mia - debug info
+                int nContent = media.describeContents();
+                String filePath = media.getFilePath();
+                String name = media.getName();
+                String remotePath = media.getRemotePath();
+                Log.d(TAG, "Media info - getDateMatchingMedias - " );
+                Log.d(TAG, " * nContent: " + nContent  );
+                Log.d(TAG, " * filePath: " + filePath  );
+                Log.d(TAG, " * name: " + name  );
+                Log.d(TAG, " * remotePath: " + remotePath );
+
+                int pointPos = name.lastIndexOf('.');
+                if ( pointPos >= 0 ) {
+                    String extFile = name.substring( pointPos+1 );
+                    if( extFile != "jpg" ){
+                        continue;
+                    }
+                }
                 Date mediaDate = dateFormatter.parse(dateStr);
                 mediaCal.setTime(mediaDate);
 
