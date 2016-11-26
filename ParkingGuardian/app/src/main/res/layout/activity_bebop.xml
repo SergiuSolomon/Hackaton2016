@@ -129,8 +129,7 @@
         android:id="@+id/downloadBt"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:width="150dp"
-        android:visibility="gone"/>
+        android:width="150dp"/>
 
     <TextView
         android:layout_width="wrap_content"
