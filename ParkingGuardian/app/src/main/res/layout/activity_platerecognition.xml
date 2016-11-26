@@ -17,9 +17,9 @@
         android:layout_height="wrap_content"
         android:freezesText="true"
         android:textSize="20sp"
-        android:gravity="center_horizontal"
-        android:maxLines = "6"
-        android:scrollbars = "horizontal"
+        android:gravity="bottom"
+        android:maxLines="6"
+        android:scrollbars = "vertical"
         />
 
     <Button
