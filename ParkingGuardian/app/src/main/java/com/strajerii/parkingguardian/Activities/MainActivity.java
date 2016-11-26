@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, PlateRecognitionActivity.class);
-                //intent.putExtra(EXTRA_DEVICE_SERVICE, droneService);
                 startActivity(intent);
             }
         });

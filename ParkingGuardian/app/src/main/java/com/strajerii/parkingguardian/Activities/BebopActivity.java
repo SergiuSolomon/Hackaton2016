@@ -21,6 +21,7 @@ import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.strajerii.parkingguardian.Drone.BebopDrone;
 import com.strajerii.parkingguardian.Drone.DroneAction;
+import com.strajerii.parkingguardian.Drone.DroneActionRunnable;
 import com.strajerii.parkingguardian.Drone.PathManager;
 import com.strajerii.parkingguardian.R;
 import com.strajerii.parkingguardian.View.BebopVideoView;
@@ -124,7 +125,10 @@ public class BebopActivity extends AppCompatActivity {
         mTakeOffLandBt = (Button) findViewById(R.id.takeOffOrLandBt);
         mTakeOffLandBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                takeOffOrLand();
+                Log.d( TAG, "takeoffclick" );
+                _pathManager.resetToStart();
+                Thread workerThread = new Thread( new DroneActionRunnable( mBebopDrone, _pathManager ) );
+                workerThread.start();
             }
         });
 
@@ -356,16 +360,6 @@ public class BebopActivity extends AppCompatActivity {
             {
                 case ARCONTROLLER_DEVICE_STATE_RUNNING:
                     mConnectionProgressDialog.dismiss();
-
-                    if (_pathManager.hasActions()) {
-                        DroneAction action = _pathManager.getNextAction();
-                        doAction(action);
-                        try {
-                            Thread.sleep(action.time);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
                     break;
 
                 case ARCONTROLLER_DEVICE_STATE_STOPPED:
@@ -398,17 +392,8 @@ public class BebopActivity extends AppCompatActivity {
                     mTakeOffLandBt.setEnabled(true);
                     mDownloadBt.setEnabled(false);
 
-                    while(_pathManager.hasActions()) {
-                        DroneAction action = _pathManager.getNextAction();
-                        doAction(action);
-                        try {
-                            Thread.sleep(action.time);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    _pathManager.resetToStart();
+                    Log.d( TAG, "onPilotingStateChanged" );
+                    Thread workerThread = new Thread( new DroneActionRunnable( mBebopDrone, _pathManager ) );
                     break;
                 default:
                     //mTakeOffLandBt.setEnabled(false);
@@ -473,114 +458,4 @@ public class BebopActivity extends AppCompatActivity {
             }
         }
     };
-
-    private void doAction( DroneAction action ) {
-        Log.d("Bebop activity", "action: " + action.toString() );
-
-        switch( action.eMove ) {
-            case eTakeOff:
-            case eLand:
-                takeOffOrLand();
-                break;
-
-            //take picture
-            case eTakePicture:
-                mBebopDrone.setGaz((byte) 0);
-                mBebopDrone.setPitch((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
-                mBebopDrone.setYaw((byte) 0);
-                mBebopDrone.setRoll((byte) 0);
-
-                mBebopDrone.takePicture();
-                break;
-
-            //up
-            case eStartUp: {
-                mBebopDrone.setGaz((byte) action.gas);
-            }
-            break;
-            case eStopUp: {
-                mBebopDrone.setGaz((byte) 0);
-            }
-            break;
-
-            //down
-            case eStartDown: {
-                mBebopDrone.setGaz((byte) -action.gas);
-            }
-            break;
-            case eStopDown: {
-                mBebopDrone.setGaz((byte) 0);
-            }
-            break;
-
-            //forward
-            case eStartForward: {
-                mBebopDrone.setPitch((byte) action.gas);
-                mBebopDrone.setFlag((byte) 1);
-            }
-            break;
-            case eStopForward: {
-                mBebopDrone.setPitch((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
-            }
-            break;
-
-            //backward
-            case eStartBackward: {
-                mBebopDrone.setPitch((byte) -action.gas);
-                mBebopDrone.setFlag((byte) 1);
-            }
-            break;
-            case eStopBackward: {
-                mBebopDrone.setPitch((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
-            }
-            break;
-
-            // yaw left
-            case eStartYawLeft: {
-                mBebopDrone.setYaw((byte) -action.gas);
-            }
-            break;
-            case eStopYawLeft: {
-                mBebopDrone.setYaw((byte) 0);
-            }
-            break;
-
-            //yaw right
-            case eStartYawRight: {
-                mBebopDrone.setYaw((byte) action.gas);
-            }
-            break;
-            case eStopYawRight: {
-                mBebopDrone.setYaw((byte) 0);
-            }
-            break;
-
-            // roll left
-            case eStartRollLeft: {
-                mBebopDrone.setRoll((byte) -action.gas);
-                mBebopDrone.setFlag((byte) 1);
-            }
-            break;
-            case eStopRollLeft: {
-                mBebopDrone.setRoll((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
-            }
-            break;
-
-            //roll right
-            case eStartRollRight: {
-                mBebopDrone.setRoll((byte) action.gas);
-                mBebopDrone.setFlag((byte) 1);
-            }
-            break;
-            case eStopRollRight: {
-                mBebopDrone.setRoll((byte) 0);
-                mBebopDrone.setFlag((byte) 0);
-            }
-            break;
-        }
-    }
 }
