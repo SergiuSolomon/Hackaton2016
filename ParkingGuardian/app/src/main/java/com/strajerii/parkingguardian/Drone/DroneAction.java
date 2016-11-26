@@ -1,7 +1,8 @@
 package com.strajerii.parkingguardian.Drone;
 
 public class DroneAction {
-    DroneAction( EMoves eMove, MoveData mvData ) {
+    DroneAction( EMoves eMv, MoveData mvData ) {
+        eMove = eMv;
         moveData = mvData;
         this.gas = 0;
         this.time = 0;

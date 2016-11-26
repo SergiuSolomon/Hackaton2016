@@ -21,6 +21,12 @@ public class DroneActionRunnable implements Runnable
             DroneAction action = _pathManager.getNextAction();
             doAction( action );
 
+            try {
+                Thread.sleep( action.moveData._nSleep );
+            } catch (InterruptedException e) {
+                Log.d( "Bebop activity", "Sleep failed", e );
+            }
+
             if( action.shouldWait() ){
                 //we need to wait drone to finish the given action
                 mBebopDrone.waitDrone();
@@ -31,19 +37,20 @@ public class DroneActionRunnable implements Runnable
     private void takeOffOrLand() {
         switch (mBebopDrone.getFlyingState()) {
             case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
+                Log.d("Bebop activity", "state landed" );
                 mBebopDrone.takeOff();
                 break;
             case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
             case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
+                Log.d("Bebop activity", "state flying" );
                 mBebopDrone.land();
                 break;
             default:
+                Log.d("Bebop activity", "Unknown state" );
         }
     }
 
     private void doAction( DroneAction action ) {
-        Log.d("Bebop activity", "action " );
-
         switch( action.eMove ) {
             case eTakeOff:
                 Log.d("Bebop activity", "action take off" );
@@ -62,7 +69,7 @@ public class DroneActionRunnable implements Runnable
 
             //up
             case eMove: {
-                Log.d("Bebop activity", "action start up" );
+                Log.d("Bebop activity", "action move" );
                 mBebopDrone.moveBy( action.moveData );
             }
             break;

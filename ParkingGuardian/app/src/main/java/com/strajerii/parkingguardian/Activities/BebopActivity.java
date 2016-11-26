@@ -36,8 +36,10 @@ public class BebopActivity extends AppCompatActivity {
     private BebopVideoView mVideoView;
 
     private TextView mBatteryLabel;
-    private Button mTakeOffLandBt;
+    private Button mTakeOffBt;
+    private Button mLandBt;
     private Button mDownloadBt;
+    Thread _workerThread = null;
 
     PathManager _pathManager = new PathManager();
 
@@ -122,13 +124,21 @@ public class BebopActivity extends AppCompatActivity {
             }
         });
 
-        mTakeOffLandBt = (Button) findViewById(R.id.takeOffOrLandBt);
-        mTakeOffLandBt.setOnClickListener(new View.OnClickListener() {
+        mTakeOffBt = (Button) findViewById(R.id.startPathBt);
+        mTakeOffBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d( TAG, "takeoffclick" );
                 _pathManager.resetToStart();
-                Thread workerThread = new Thread( new DroneActionRunnable( mBebopDrone, _pathManager ) );
-                workerThread.start();
+                _workerThread = null;
+                mBebopDrone.takeOff();
+            }
+        });
+
+        mLandBt = (Button) findViewById(R.id.landBt);
+        mLandBt.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.d( TAG, "land" );
+                mBebopDrone.land();
             }
         });
 
@@ -382,18 +392,17 @@ public class BebopActivity extends AppCompatActivity {
         public void onPilotingStateChanged(ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state) {
             switch (state) {
                 case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
-                    mTakeOffLandBt.setText("Take off");
-                    mTakeOffLandBt.setEnabled(true);
                     mDownloadBt.setEnabled(true);
                     break;
                 case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
                 case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
-                    mTakeOffLandBt.setText("Land");
-                    mTakeOffLandBt.setEnabled(true);
                     mDownloadBt.setEnabled(false);
 
                     Log.d( TAG, "onPilotingStateChanged" );
-                    Thread workerThread = new Thread( new DroneActionRunnable( mBebopDrone, _pathManager ) );
+                    if ( null == _workerThread ) {
+                        _workerThread = new Thread( new DroneActionRunnable( mBebopDrone, _pathManager ) );
+                        _workerThread.start();
+                    }
                     break;
                 default:
                     //mTakeOffLandBt.setEnabled(false);

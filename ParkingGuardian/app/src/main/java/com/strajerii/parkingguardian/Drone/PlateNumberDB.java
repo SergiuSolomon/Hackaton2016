@@ -49,7 +49,9 @@ public class PlateNumberDB {
                 }
 
                 if (!areEqual) {
-                    foreignPlates.add(plate);
+                    if (valid(plate)) {
+                        foreignPlates.add(plate);
+                    }
                 }
             }
         }
@@ -69,7 +71,7 @@ public class PlateNumberDB {
 
         for (int i = 0; i < 3; i++ ) {
             if (!details1.get(i).contains(details2.get(i)) &&
-                !details2.get(i).contains(details1.get(i))) {
+                    !details2.get(i).contains(details1.get(i))) {
                 arePartiallyEqual = false;
                 break;
             }
@@ -111,11 +113,21 @@ public class PlateNumberDB {
             boolean isDigit = (c >= '0' && c <= '9');
             if (!isDigit) {
                 details.set(2, details.get(2) + c);
-            } else {
-                break;
+            } else if (c == '0' ) {
+                details.set(2, details.get(2) + 'O');
             }
         }
 
         return details;
+    }
+
+    private boolean valid(String plate) {
+        ArrayList<String> details = getPlateDetail(plate);
+
+        boolean part1Valid = details.get(0).length() == 1 || details.get(0).length() == 2;
+        boolean part2Valid = details.get(1).length() == 2 || details.get(1).length() == 3;
+        boolean part3Valid = details.get(2).length() == 3;
+
+        return (part1Valid && part2Valid && part3Valid);
     }
 }

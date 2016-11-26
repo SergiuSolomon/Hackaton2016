@@ -31,10 +31,21 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/takeOffOrLandBt"
+        android:id="@+id/startPathBt"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:width="150dp"/>
+        android:width="150dp"
+        android:text="Start path" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/landBt"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
+        android:width="150dp"
+        android:text="Land" />
 
     <Button
         android:layout_width="75dp"
